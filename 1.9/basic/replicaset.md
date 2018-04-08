@@ -1,0 +1,3 @@
+## ReplicaSet和ReplicationController
+
+ReplicaSet是下一代的复制控制器。它跟ReplicationController的唯一区别是ReplicaSet支持[selector](label.md)。在实际使用过程中，我们不会去直接使用这两个对象去管理pods，都是通过Deployment去管理的。 

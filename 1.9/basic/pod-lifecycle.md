@@ -45,5 +45,18 @@ Kubelet可以支持两种探针：
 
 ## 重启策略
 
-`restartPolicy`的值可以是`Always`,`OnFailure`,`Never`。默认是`Always`。`restartPolicy`对pod中的所有容器有效。
+`restartPolicy`的值可以是`Always`,`OnFailure`,`Never`。默认是`Always`。`restartPolicy`对pod中的所有容器有效。`restartPolicy`只通过同一节点的kubelet重启容器。失败的容器以5分钟为上限以指数(10s,20s,40s...)的延迟重启，并成功执行10分钟后重置。
 
+## Pod寿命
+
+通常而言，pods不会消失除非有删除操作。这个操作可以是人为的或者是控制器控制的。唯一的例外是成功或者失败的`phase`超过一段时间的pod会被自动删除。
+
+有三种可用的控制器：
+
+- 对预期会终止的pods使用Job，比如批量计划，Job仅适用于重启策略为OnFailure或Never的pods。
+- 对预期不会终止的pods使用[ReplicationController],[ReplicaSet],[Deployment]，比如web服务器。ReplicationControllers仅适用于重启策略为Always的pods。
+- 对需要在每个节点运行的pods使用[DaemonSet]，因为它提供系统服务。
+
+这个三种控制器包含PodTemplate。它建议创建适当的控制器来创建pods，而不是直接创建pods。因为pods不是弹性的，而控制器是。
+
+如果一个节点失联，该节点的所有pods的`phase`字段会设置为`Failed`。
